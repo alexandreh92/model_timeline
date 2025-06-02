@@ -56,3 +56,4 @@ ehthumbs.db
 Thumbs.db
 
 spec/tmp
+coverage
