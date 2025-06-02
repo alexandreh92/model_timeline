@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
+set -vx
+
+# Install dependencies
+bundle install
+
+# Create test database
+bundle exec ruby bin/setup_test_db
+
+echo "Setup complete! 🎉"

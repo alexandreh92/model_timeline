@@ -1,0 +1,49 @@
+#!/usr/bin/env ruby
+require 'fileutils'
+require 'pg'
+require 'logger'
+require 'active_support'
+require 'active_support/core_ext'
+require 'active_record'
+
+# Create PostgreSQL database
+begin
+  conn = PG.connect(
+    host: ENV['POSTGRES_HOST'] || 'localhost',
+    user: ENV['POSTGRES_USER'] || 'postgres',
+    password: ENV['POSTGRES_PASSWORD'] || 'postgres'
+  )
+
+  # Drop database if it exists
+  conn.exec("DROP DATABASE IF EXISTS model_timeline_test")
+  # Create fresh database
+  conn.exec("CREATE DATABASE model_timeline_test")
+  puts "Test database created successfully!"
+rescue PG::Error => e
+  puts "Error creating database: #{e.message}"
+  exit 1
+ensure
+  conn.close if conn
+end
+
+# Set up a basic logger to avoid ActiveRecord logging issues
+ActiveRecord::Base.logger = Logger.new(STDOUT)
+ActiveRecord::Base.logger.level = Logger::INFO
+
+# Connect to the newly created database
+ActiveRecord::Base.establish_connection(
+  adapter: 'postgresql',
+  host: ENV['POSTGRES_HOST'] || 'localhost',
+  username: ENV['POSTGRES_USER'] || 'postgres',
+  password: ENV['POSTGRES_PASSWORD'] || 'postgres',
+  database: 'model_timeline_test'
+)
+
+# Load the schema
+puts "Creating database schema..."
+require_relative '../spec/support/schema.rb'
+puts "Schema created successfully!"
+
+# Make the script executable
+FileUtils.chmod('+x', __FILE__)
+puts "Test database setup complete!"
