@@ -9,6 +9,7 @@ require 'factory_bot'
 require 'faker'
 require 'database_cleaner/active_record'
 require 'pry-byebug'
+require 'ostruct'
 
 # Load the gem
 require 'model_timeline'

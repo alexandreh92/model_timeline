@@ -2,6 +2,7 @@ require "model_timeline/version"
 require "model_timeline/timelineable"
 require "model_timeline/timeline_entry"
 require "model_timeline/controller_additions"
+require "model_timeline/generators/install_generator" if defined?(Rails)
 require "model_timeline/railtie" if defined?(Rails)
 
 module ModelTimeline

@@ -1,0 +1,58 @@
+# Ruby specific
+*.gem
+*.rbc
+/.config
+/coverage/
+/InstalledFiles
+/pkg/
+/spec/reports/
+/spec/examples.txt
+/test/tmp/
+/test/version_tmp/
+/tmp/
+
+# Documentation
+/.yardoc/
+/_yardoc/
+/doc/
+/rdoc/
+
+# Environment management
+/.bundle/
+/vendor/bundle
+/lib/bundler/man/
+.ruby-version
+.ruby-gemset
+.rvmrc
+/gemfiles/*.gemfile.lock
+.byebug_history
+
+# Dependencies
+/.gems
+/Gemfile.lock
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+*.sqlite3
+db/*.sqlite3
+db/*.sqlite3-journal
+
+# IDE files
+/.idea/
+/.vscode/
+*.swp
+*.swo
+*~
+
+# OS specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+spec/tmp

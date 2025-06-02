@@ -10,7 +10,7 @@ RSpec.describe ModelTimeline::TimelineEntry do
       auditable: post,
       audit_log_table: 'content_changes',
       audit_action: 'update',
-      changes: { 'title' => ['Old Title', 'New Title'] },
+      object_changes: { 'title' => ['Old Title', 'New Title'] },
       audited_at: Time.current,
       user: user,
       ip_address: '192.168.1.1'

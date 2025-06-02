@@ -12,4 +12,5 @@ group :development, :test do
   gem 'rails', '~> 6.1'
   gem 'pry-byebug'
   gem 'appraisal'
+  gem 'generator_spec'
 end
