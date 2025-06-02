@@ -15,10 +15,10 @@ begin
   )
 
   # Drop database if it exists
-  conn.exec("DROP DATABASE IF EXISTS model_timeline_test")
+  conn.exec('DROP DATABASE IF EXISTS model_timeline_test')
   # Create fresh database
-  conn.exec("CREATE DATABASE model_timeline_test")
-  puts "Test database created successfully!"
+  conn.exec('CREATE DATABASE model_timeline_test')
+  puts 'Test database created successfully!'
 rescue PG::Error => e
   puts "Error creating database: #{e.message}"
   exit 1
@@ -40,10 +40,10 @@ ActiveRecord::Base.establish_connection(
 )
 
 # Load the schema
-puts "Creating database schema..."
-require_relative '../spec/support/schema.rb'
-puts "Schema created successfully!"
+puts 'Creating database schema...'
+require_relative '../spec/support/schema'
+puts 'Schema created successfully!'
 
 # Make the script executable
 FileUtils.chmod('+x', __FILE__)
-puts "Test database setup complete!"
+puts 'Test database setup complete!'

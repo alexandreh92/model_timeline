@@ -1,15 +1,12 @@
 class CreateModelTimelineTables < ActiveRecord::Migration[<%= ActiveRecord::Migration.current_version %>]
   def change
     create_table :model_timeline_timeline_entries do |t|
-      t.string :auditable_type
-      t.bigint :auditable_id
-      t.string :audit_log_table, null: false
-      t.string :audit_action, null: false
+      t.string :timelineable_type
+      t.bigint :timelineable_id
+      t.string :action, null: false
 
       # Use PostgreSQL's JSONB type for better performance
       t.jsonb :object_changes, default: {}, null: false
-
-      t.datetime :audited_at
 
       # Polymorphic user association
       t.string :user_type
@@ -22,10 +19,9 @@ class CreateModelTimelineTables < ActiveRecord::Migration[<%= ActiveRecord::Migr
       t.timestamps
     end
 
-    add_index :model_timeline_timeline_entries, [:auditable_type, :auditable_id], name: 'idx_timeline_on_auditable'
-    add_index :model_timeline_timeline_entries, :audit_log_table, name: 'idx_timeline_on_log_table'
+    add_index :model_timeline_timeline_entries, [:timelineable_type, :timelineable_id], name: 'idx_timeline_on_timelineable'
     add_index :model_timeline_timeline_entries, [:user_type, :user_id], name: 'idx_timeline_on_user'
-    add_index :model_timeline_timeline_entries, :changes, using: :gin, name: 'idx_timeline_on_changes'
+    add_index :model_timeline_timeline_entries, :object_changes, using: :gin, name: 'idx_timeline_on_changes'
     add_index :model_timeline_timeline_entries, :ip_address, name: 'idx_timeline_on_ip'
   end
 end

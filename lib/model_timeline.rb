@@ -1,14 +1,15 @@
-require "model_timeline/version"
-require "model_timeline/timelineable"
-require "model_timeline/timeline_entry"
-require "model_timeline/controller_additions"
-require "model_timeline/generators/install_generator" if defined?(Rails)
-require "model_timeline/railtie" if defined?(Rails)
+require 'model_timeline/version'
+require 'model_timeline/timelineable'
+require 'model_timeline/timeline_entry'
+require 'model_timeline/controller_additions'
+require 'model_timeline/configuration_error'
+require 'model_timeline/generators/install_generator' if defined?(Rails)
+require 'model_timeline/railtie' if defined?(Rails)
 
 module ModelTimeline
   # Configuration options
   class << self
-    attr_accessor :current_user_method, :current_ip_method
+    attr_writer :current_user_method, :current_ip_method
 
     def configure
       yield self if block_given?

@@ -73,8 +73,6 @@ user = User.find(1)
 # Get all audit logs for a user
 logs = ModelTimeline::AuditInstance.for_auditable(user)
 
-# Get logs from a specific audit logger
-security_logs = ModelTimeline::AuditInstance.for_auditable(user).for_log_table('security_audit_logs')
 ```
 
 # PostgreSQL-Specific Features

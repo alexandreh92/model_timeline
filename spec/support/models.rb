@@ -8,7 +8,6 @@ class Post < ActiveRecord::Base
   has_timeline
 
   belongs_to :user
-
 end
 
 # Create a simple test controller class for controller tests

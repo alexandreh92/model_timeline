@@ -1,0 +1,102 @@
+require:
+  - rubocop-rspec
+
+AllCops:
+  Exclude:
+    - "coverage/**/*"
+  NewCops: enable
+  TargetRubyVersion: 2.7
+
+# Layout
+Layout/LineLength:
+  AutoCorrect: true
+  Max: 120
+Layout/SpaceAroundMethodCallOperator:
+  Enabled: false
+Layout/IndentationConsistency:
+  Enabled: true
+  AutoCorrect: true
+  EnforcedStyle: indented_internal_methods
+Layout/EmptyLinesAroundAttributeAccessor:
+  Enabled: true
+  AutoCorrect: true
+
+# Lint
+Lint/RaiseException:
+  Enabled: false
+Lint/StructNewOverride:
+  Enabled: false
+Lint/Debugger:
+  Enabled: true
+  Severity: error
+Lint/MissingSuper:
+  Enabled: false
+
+# Metrics
+Metrics/ClassLength:
+  Enabled: false
+Metrics/AbcSize:
+  Enabled: false
+Metrics/MethodLength:
+  Enabled: false
+Metrics/BlockLength:
+  Enabled: false
+
+# Style
+Style/Documentation:
+  Enabled: false
+Style/HashEachMethods:
+  Enabled: false
+Style/HashTransformKeys:
+  Enabled: false
+Style/HashTransformValues:
+  Enabled: false
+Style/ExponentialNotation:
+  Enabled: true
+Style/ClassAndModuleChildren:
+  AutoCorrect: true
+  EnforcedStyle: nested
+Style/ClassMethods:
+  AutoCorrect: true
+Style/StringLiterals:
+  EnforcedStyle: single_quotes
+Style/TrivialAccessors:
+  ExactNameMatch: false
+  Enabled: false
+Style/RedundantFreeze:
+  Enabled: true
+  AutoCorrect: true
+Style/RedundantRegexpCharacterClass:
+  Enabled: true
+  AutoCorrect: true
+Style/RedundantRegexpEscape:
+  Enabled: true
+  AutoCorrect: true
+Style/RedundantReturn:
+  AllowMultipleReturnValues: true
+  AutoCorrect: true
+Style/HashLikeCase:
+  MinBranchesCount: 4
+Style/SingleArgumentDig:
+  Enabled: false
+Style/FrozenStringLiteralComment:
+  SafeAutoCorrect: true
+  Enabled: true
+Style/OpenStructUse:
+  Enabled: false
+
+# RSpec
+RSpec/VariableName:
+  Enabled: false
+RSpec/LetSetup:
+  Enabled: false
+RSpec/NestedGroups:
+  Max: 10
+RSpec/ExampleLength:
+  Enabled: false
+RSpec/MultipleExpectations:
+  Max: 4
+RSpec/MultipleMemoizedHelpers:
+  Max: 10
+RSpec/AnyInstance:
+  Enabled: false

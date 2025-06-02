@@ -4,29 +4,19 @@ RSpec.describe ModelTimeline::TimelineEntry do
   let(:user) { create(:user) }
   let(:post) { create(:post, user: user) }
 
-  # We'll create a sample entry for testing
   let!(:entry) do
     described_class.create!(
-      auditable: post,
-      audit_log_table: 'content_changes',
-      audit_action: 'update',
+      timelineable: post,
+      action: 'update',
       object_changes: { 'title' => ['Old Title', 'New Title'] },
-      audited_at: Time.current,
       user: user,
       ip_address: '192.168.1.1'
     )
   end
 
-  describe '.for_auditable' do
-    it 'finds entries for a specific auditable object' do
-      results = described_class.for_auditable(post)
-      expect(results).to include(entry)
-    end
-  end
-
-  describe '.for_log_table' do
-    it 'finds entries for a specific log table' do
-      results = described_class.for_log_table('content_changes')
+  describe '.for_timelineable' do
+    it 'finds entries for a specific timelineable object' do
+      results = described_class.for_timelineable(post)
       expect(results).to include(entry)
     end
   end
