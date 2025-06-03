@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe ModelTimeline::ControllerAdditions do
@@ -6,7 +8,7 @@ RSpec.describe ModelTimeline::ControllerAdditions do
 
   before do
     # Mock the included module
-    controller.extend(ModelTimeline::ControllerAdditions)
+    controller.extend(described_class)
     controller.set_current_user(user)
     ModelTimeline.clear_request_store
   end

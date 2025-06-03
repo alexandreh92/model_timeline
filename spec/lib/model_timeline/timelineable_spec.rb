@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ModelTimeline::Timelineable, type: :model do
+RSpec.describe ModelTimeline::Timelineable, :with_timeline, type: :model do
   before do
     # Set up current user and IP for testing
     ModelTimeline.store_user_and_ip(create(:user), '192.168.1.1')

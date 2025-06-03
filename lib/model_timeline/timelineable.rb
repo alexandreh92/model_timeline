@@ -42,6 +42,8 @@ module ModelTimeline
     private
 
       def log_after_save(config_key)
+        return unless ModelTimeline.enabled?
+
         config = self.class.loggers[config_key]
         return unless config
 
@@ -63,6 +65,8 @@ module ModelTimeline
       end
 
       def log_audit_deletion(config_key)
+        return unless ModelTimeline.enabled?
+
         config = self.class.loggers[config_key]
         return unless config
 

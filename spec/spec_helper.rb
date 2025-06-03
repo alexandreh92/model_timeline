@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'simplecov'
 SimpleCov.start do
   add_filter '/spec/'
@@ -14,7 +16,6 @@ require 'ostruct'
 # Load the gem
 require 'model_timeline'
 
-
 # Include the Timelineable module in ActiveRecord::Base
 # This allows all ActiveRecord models to use the timeline functionality
 # something that railtie would typically handle
@@ -30,9 +31,9 @@ ActiveRecord::Base.establish_connection(
 )
 
 # Load support files
-Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].
-  reject { |f| f.include?('schema.rb') }.
-  each { |f| require f }
+Dir["#{File.dirname(__FILE__)}/support/**/*.rb"]
+  .reject { |f| f.include?('schema.rb') }
+  .each { |f| require f }
 
 RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
@@ -48,7 +49,7 @@ RSpec.configure do |config|
     DatabaseCleaner.clean_with(:truncation)
   end
 
-  config.around(:each) do |example|
+  config.around do |example|
     DatabaseCleaner.cleaning do
       example.run
     end

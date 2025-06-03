@@ -108,3 +108,49 @@ ModelTimeline uses GIN indexes on the JSONB changes column, providing efficient 
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+
+## RSpec
+
+```
+require 'model_timeline/rspec'
+
+RSpec.configure do |config|
+  config.include ModelTimeline::RSpec
+
+  # Other configuration...
+end
+```
+
+```
+# Timeline is disabled by default in all tests
+
+# Enable timeline for a specific test
+it 'tracks changes', :with_timeline do
+  # ModelTimeline is enabled here
+  user = create(:user)
+  expect(ModelTimeline::TimelineEntry.count).to eq(1)
+end
+
+# Enable timeline for a group of tests
+describe 'tracked actions', :with_timeline do
+  it 'tracks creation' do
+    # ModelTimeline is enabled here
+    post = create(:post)
+    expect(post.timeline_entries.count).to eq(1)
+  end
+
+  it 'tracks updates' do
+    # ModelTimeline is still enabled here
+    post = create(:post)
+    post.update(title: 'New Title')
+    expect(post.timeline_entries.count).to eq(2)
+  end
+end
+
+# Tests without the metadata will have timeline disabled
+it 'does not track changes' do
+  # ModelTimeline is disabled here
+  user = create(:user)
+  expect(ModelTimeline::TimelineEntry.count).to eq(0)
+end
+```
