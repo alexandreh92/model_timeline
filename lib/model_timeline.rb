@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'model_timeline/version'
 require 'model_timeline/timelineable'
 require 'model_timeline/timeline_entry'

@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
-RSpec.describe ModelTimeline::Timelineable do
+RSpec.describe ModelTimeline::Timelineable, type: :model do
   before do
     # Set up current user and IP for testing
     ModelTimeline.store_user_and_ip(create(:user), '192.168.1.1')
@@ -65,6 +67,37 @@ RSpec.describe ModelTimeline::Timelineable do
       expect do
         post_class
       end.to raise_exception(ModelTimeline::ConfigurationError, /Multiple definitions of the same configuration/)
+    end
+  end
+
+  context 'when the same configuration is present in two different models' do
+    let!(:post) { post_class.create(title: 'Initial', content: 'Initial') }
+    let!(:user) { user_class.create(username: 'Initial') }
+
+    let(:post_class) do
+      Class.new(ActiveRecord::Base) do
+        self.table_name = 'posts'
+
+        has_timeline :timeline_entries
+      end
+    end
+
+    let(:user_class) do
+      Class.new(ActiveRecord::Base) do
+        self.table_name = 'users'
+
+        has_timeline :timeline_entries
+      end
+    end
+
+    before do
+      stub_const('Post', post_class)
+      stub_const('User', user_class)
+    end
+
+    it 'allows both models to write into the table' do
+      expect(post).to have_many(:timeline_entries).class_name('ModelTimeline::TimelineEntry')
+      expect(user).to have_many(:timeline_entries).class_name('ModelTimeline::TimelineEntry')
     end
   end
 
@@ -214,6 +247,39 @@ RSpec.describe ModelTimeline::Timelineable do
           post.destroy!
         end.to change(ModelTimeline::TimelineEntry.where(action: 'destroy'), :count).by(1)
       end
+    end
+  end
+
+  context 'with custom model/table' do
+    let(:post) { post_class.create!(title: 'Initial', content: 'Initial') }
+
+    let(:post_class) do
+      Class.new(ActiveRecord::Base) do
+        self.table_name = 'posts'
+
+        has_timeline :custom_timeline_entries, class_name: 'CustomTimelineEntry'
+
+        belongs_to :user
+      end
+    end
+
+    let(:custom_timeline_class) do
+      Class.new(ModelTimeline::TimelineEntry) do
+        self.table_name = 'custom_timeline_entries'
+      end
+    end
+
+    before do
+      stub_const('CustomTimelineEntry', custom_timeline_class)
+      stub_const('Post', post_class)
+    end
+
+    it 'associates post with custom_timeline_entries' do
+      expect(post).to have_many(:custom_timeline_entries).class_name('CustomTimelineEntry')
+    end
+
+    it 'creates logs on the custom_timeline_entries table' do
+      expect(post.custom_timeline_entries.count).to eq(1)
     end
   end
 end

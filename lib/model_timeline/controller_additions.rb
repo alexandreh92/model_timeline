@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ModelTimeline
   module ControllerAdditions
     extend ActiveSupport::Concern
@@ -9,13 +11,21 @@ module ModelTimeline
 
     # Set user and IP address for the current request
     def set_model_timeline_info
-      user = respond_to?(ModelTimeline.current_user_method, true) ?
-             send(ModelTimeline.current_user_method) :
-             nil
+      user = if respond_to?(ModelTimeline.current_user_method, true)
+               send(ModelTimeline.current_user_method)
+             else
+               nil
+             end
 
-      ip = request.respond_to?(ModelTimeline.current_ip_method) ?
-           request.send(ModelTimeline.current_ip_method) :
-           request.remote_ip rescue nil
+      ip = begin
+        if request.respond_to?(ModelTimeline.current_ip_method)
+          request.send(ModelTimeline.current_ip_method)
+        else
+          request.remote_ip
+        end
+      rescue StandardError
+        nil
+      end
 
       ModelTimeline.store_user_and_ip(user, ip)
     end
