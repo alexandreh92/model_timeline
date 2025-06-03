@@ -55,15 +55,17 @@ module ModelTimeline
       # rubocop:disable Metrics/CyclomaticComplexity
       # rubocop:disable Metrics/PerceivedComplexity
       # rubocop:disable Naming/PredicateName
-      def has_timeline(association_name = :timeline_entries, options = {})
-        klass = (options[:class_name] || 'ModelTimeline::TimelineEntry').constantize
+      def has_timeline(*args, **kwargs)
+        association_name = args.first.is_a?(Symbol) ? args.shift : :timeline_entries
+
+        klass = (kwargs[:class_name] || 'ModelTimeline::TimelineEntry').constantize
 
         config = {
-          on: options[:on] || %i[create update destroy],
-          only: options[:only],
-          ignore: options[:ignore] || [],
+          on: kwargs[:on] || %i[create update destroy],
+          only: kwargs[:only],
+          ignore: kwargs[:ignore] || [],
           klass: klass,
-          meta: options[:meta] || {}
+          meta: kwargs[:meta] || {}
         }
 
         config_key = "#{to_s.underscore}-#{klass}"
