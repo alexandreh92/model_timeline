@@ -329,5 +329,22 @@ RSpec.describe ModelTimeline::Timelineable, :with_timeline, type: :model do
         expect(comment.custom_timeline_entries.last.post_id).to eq(post.id)
       end
     end
+
+    context 'when meta has a key that does not exist on the table' do
+      let(:comment_class) do
+        Class.new(ActiveRecord::Base) do
+          self.table_name = 'comments'
+
+          has_timeline :custom_timeline_entries, class_name: 'CustomTimelineEntry',
+                                                 meta: { some_data: lambda(&:post_id) }
+
+          belongs_to :post
+        end
+      end
+
+      it 'assigns result to metadata object' do
+        expect(comment.custom_timeline_entries.last.metadata).to eq({ 'some_data' => post.id })
+      end
+    end
   end
 end

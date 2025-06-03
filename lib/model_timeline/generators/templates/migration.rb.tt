@@ -7,6 +7,7 @@ class CreateModelTimelineTables < ActiveRecord::Migration[<%= ActiveRecord::Migr
 
       # Use PostgreSQL's JSONB type for better performance
       t.jsonb :object_changes, default: {}, null: false
+      t.jsonb :metadata, default: {}, null: false
 
       # Polymorphic user association
       t.string :user_type
@@ -22,6 +23,7 @@ class CreateModelTimelineTables < ActiveRecord::Migration[<%= ActiveRecord::Migr
     add_index :<%= @table_name %>, [:timelineable_type, :timelineable_id], name: 'idx_timeline_on_timelineable'
     add_index :<%= @table_name %>, [:user_type, :user_id], name: 'idx_timeline_on_user'
     add_index :<%= @table_name %>, :object_changes, using: :gin, name: 'idx_timeline_on_changes'
+    add_index :<%= @table_name %>, :metadata, using: :gin, name: 'idx_timeline_on_meta'
     add_index :<%= @table_name %>, :ip_address, name: 'idx_timeline_on_ip'
   end
 end

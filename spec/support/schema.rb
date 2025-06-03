@@ -7,6 +7,7 @@ ActiveRecord::Schema.define do
     t.string :action, null: false
 
     t.jsonb :object_changes, default: {}, null: false
+    t.jsonb :metadata, default: {}, null: false
 
     t.string :user_type
     t.bigint :user_id
@@ -21,6 +22,7 @@ ActiveRecord::Schema.define do
             name: 'idx_timeline_on_timelineable'
   add_index :model_timeline_timeline_entries, %i[user_type user_id], name: 'idx_timeline_on_user'
   add_index :model_timeline_timeline_entries, :object_changes, using: :gin, name: 'idx_timeline_on_changes'
+  add_index :model_timeline_timeline_entries, :metadata, using: :gin, name: 'idx_timeline_on_meta'
   add_index :model_timeline_timeline_entries, :ip_address, name: 'idx_timeline_on_ip'
 
   # Custom Table
@@ -30,6 +32,7 @@ ActiveRecord::Schema.define do
     t.string :action, null: false
 
     t.jsonb :object_changes, default: {}, null: false
+    t.jsonb :metadata, default: {}, null: false
 
     t.string :user_type
     t.bigint :user_id
@@ -45,6 +48,7 @@ ActiveRecord::Schema.define do
             name: 'idx_custom_timeline_on_timelineable'
   add_index :custom_timeline_entries, %i[user_type user_id], name: 'idx_custom_timeline_on_user'
   add_index :custom_timeline_entries, :object_changes, using: :gin, name: 'idx_custom_timeline_on_changes'
+  add_index :custom_timeline_entries, :metadata, using: :gin, name: 'idx_custom_timeline_on_meta'
   add_index :custom_timeline_entries, :ip_address, name: 'idx_custom_timeline_on_ip'
 
   create_table :users, force: true do |t|

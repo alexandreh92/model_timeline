@@ -107,9 +107,10 @@ module ModelTimeline
           timelineable_id: id,
           action: action,
           object_changes: object_changes,
+          metadata: object_metadata(config),
           ip_address: current_ip_address,
           **current_user_attributes,
-          **collect_metadata(config[:meta], config_key)
+          **column_metadata(config)
         )
       end
 
@@ -128,9 +129,10 @@ module ModelTimeline
           timelineable_id: id,
           action: 'destroy',
           object_changes: {},
+          metadata: object_metadata(config),
           ip_address: current_ip_address,
           **current_user_attributes,
-          **collect_metadata(config[:meta], config_key)
+          **column_metadata(config)
         )
       end
 
@@ -186,8 +188,7 @@ module ModelTimeline
       # @param meta_config [Hash] The metadata configuration
       # @param config_key [String] The configuration key for this model
       # @return [Hash] Collected metadata
-      def collect_metadata(meta_config, config_key)
-        config = self.class.loggers[config_key]
+      def collect_metadata(meta_config)
         metadata = {}
 
         # First, add any thread-level metadata
@@ -206,9 +207,19 @@ module ModelTimeline
           metadata[key] = resolved_value
         end
 
-        # Only include keys that exist as columns in the timeline entry table
+        metadata
+      end
+
+      def column_metadata(config)
+        metadata = collect_metadata(config[:meta])
         column_names = config[:klass].column_names.map(&:to_sym)
         metadata.slice(*column_names)
+      end
+
+      def object_metadata(config)
+        metadata = collect_metadata(config[:meta])
+        column_names = config[:klass].column_names.map(&:to_sym)
+        metadata.except(*column_names)
       end
   end
 end

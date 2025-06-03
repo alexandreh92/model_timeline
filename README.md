@@ -127,7 +127,6 @@ end
 
 ### Using Metadata
 
-<!-- ! THIS IS WRONG, NEEDS TO BE UPDATED.  -->
 ModelTimeline allows you to include custom metadata with your timeline entries, which is especially useful for tracking changes across related entities or adding domain-specific context.
 
 #### Adding Metadata Through Configuration
@@ -147,8 +146,7 @@ end
 ```
 
 If your timeline table has columns that match the keys in your `meta` hash, these values will be stored in
-those dedicated columns. Otherwise they will be ignored. (This might change in the future and a metadata column might be
-added to put additional metadata that doesn't have a dedicated column.)
+those dedicated columns. Otherwise, they will be stored inside `metadata` column.
 
 #### Adding Metadata at Runtime
 
@@ -172,13 +170,16 @@ For tracking related entities more effectively, you can create a custom timeline
 class CreatePostTimelineEntries < ActiveRecord::Migration[6.1]
   def change
     create_table :post_timeline_entries do |t|
-      # Standard ModelTimeline columns
-      t.string   :timelineable_type
-      t.integer  :timelineable_id
-      t.string   :action
-      t.jsonb    :object_changes
-      t.integer  :user_id
-      t.string   :ip_address
+      # Default Columns - All of them are required.
+      t.string :timelineable_type
+      t.bigint :timelineable_id
+      t.string :action, null: false
+      t.jsonb :object_changes, default: {}, null: false
+      t.jsonb :metadata, default: {}, null: false
+      t.string :user_type
+      t.bigint :user_id
+      t.string :username
+      t.inet :ip_address
 
       # Custom columns that can be populated via the meta option
       t.integer  :post_id
@@ -186,9 +187,12 @@ class CreatePostTimelineEntries < ActiveRecord::Migration[6.1]
       t.timestamps
     end
 
-    add_index :post_timeline_entries, [:timelineable_type, :timelineable_id]
-    add_index :post_timeline_entries, :post_id
-    add_index :post_timeline_entries, :user_id
+    add_index :post_timeline_entries, [:timelineable_type, :timelineable_id], name: 'idx_timeline_on_timelineable'
+    add_index :post_timeline_entries, [:user_type, :user_id], name: 'idx_timeline_on_user'
+    add_index :post_timeline_entries, :object_changes, using: :gin, name: 'idx_timeline_on_changes'
+    add_index :post_timeline_entries, :metadata, using: :gin, name: 'idx_timeline_on_meta'
+    add_index :post_timeline_entries, :ip_address, name: 'idx_timeline_on_ip'
+    add_index :post_timeline_entries, :post_id, name: 'idx_timeline_on_post_id'
   end
 end
 ```

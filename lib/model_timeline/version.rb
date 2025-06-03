@@ -5,5 +5,5 @@ module ModelTimeline
   # Follows semantic versioning (https://semver.org/).
   #
   # @return [String] The current version in the format "MAJOR.MINOR.PATCH"
-  VERSION = '0.1.0'
+  VERSION = '0.1.1'
 end
