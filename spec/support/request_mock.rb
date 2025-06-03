@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RequestMock
   attr_accessor :remote_ip
 
