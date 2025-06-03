@@ -13,9 +13,11 @@ group :development, :test do
   gem 'pg', '>= 1.1.0'
   gem 'pry-byebug'
   gem 'rails', '~> 6.1'
+  gem 'redcarpet'
   gem 'rspec-rails', '~> 5.0'
   gem 'rubocop', '~> 1.29'
   gem 'rubocop-rspec'
   gem 'shoulda-matchers', '~> 6.0'
   gem 'simplecov', require: false
+  gem 'yard'
 end

@@ -1,0 +1,10 @@
+--markup markdown
+--markup-provider redcarpet
+--protected
+--private
+--embed-mixins
+--title "ModelTimeline Documentation"
+lib/**/*.rb
+-
+README.md
+LICENSE.txt

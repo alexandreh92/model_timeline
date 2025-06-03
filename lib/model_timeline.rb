@@ -35,11 +35,11 @@ require 'model_timeline/rspec/matchers' if defined?(RSpec)
 module ModelTimeline
   class << self
     # Sets the method name used to retrieve the current user
-    # @param method_name [Symbol, String] The method name to call
+    # @param value [Symbol, String] The method name to call
     attr_writer :current_user_method
 
     # Sets the method name used to retrieve the client IP address
-    # @param method_name [Symbol, String] The method name to call
+    # @param value [Symbol, String] The method name to call
     attr_writer :current_ip_method
 
     # Sets whether timeline recording is enabled

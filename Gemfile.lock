@@ -188,6 +188,7 @@ GEM
       thor (~> 1.0)
     rainbow (3.1.1)
     rake (13.3.0)
+    redcarpet (3.6.1)
     regexp_parser (2.10.0)
     rspec-core (3.13.4)
       rspec-support (~> 3.13.0)
@@ -251,6 +252,7 @@ GEM
       base64
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
+    yard (0.9.37)
     zeitwerk (2.7.3)
 
 PLATFORMS
@@ -273,11 +275,13 @@ DEPENDENCIES
   pg (>= 1.1.0)
   pry-byebug
   rails (~> 6.1)
+  redcarpet
   rspec-rails (~> 5.0)
   rubocop (~> 1.29)
   rubocop-rspec
   shoulda-matchers (~> 6.0)
   simplecov
+  yard
 
 BUNDLED WITH
    2.5.16
