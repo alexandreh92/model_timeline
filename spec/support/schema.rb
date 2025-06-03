@@ -34,6 +34,7 @@ ActiveRecord::Schema.define do
     t.string :user_type
     t.bigint :user_id
     t.string :username
+    t.bigint :post_id
 
     t.inet :ip_address
 
@@ -58,6 +59,14 @@ ActiveRecord::Schema.define do
     t.string :title
     t.text :content
     t.references :user, foreign_key: true
+
+    t.timestamps
+  end
+
+  create_table :comments, force: true do |t|
+    t.string :title
+    t.text :content
+    t.references :post, foreign_key: true
 
     t.timestamps
   end

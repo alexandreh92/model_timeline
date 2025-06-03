@@ -26,23 +26,46 @@ module ModelTimeline
     end
   end
 
-  # Class variable to store request information
-  @@request_store = {}
+  # Thread-local storage for request information
+  def self.request_store
+    Thread.current[:model_timeline_request_store] ||= {}
+  end
 
   def self.store_user_and_ip(user, ip_address)
-    @@request_store[:current_user] = user
-    @@request_store[:ip_address] = ip_address
+    request_store[:current_user] = user
+    request_store[:ip_address] = ip_address
   end
 
   def self.current_user
-    @@request_store[:current_user]
+    request_store[:current_user]
   end
 
   def self.current_ip
-    @@request_store[:ip_address]
+    request_store[:ip_address]
   end
 
   def self.clear_request_store
-    @@request_store = {}
+    Thread.current[:model_timeline_request_store] = {}
+  end
+
+  # Metadata handling
+  def self.metadata
+    Thread.current[:model_timeline_metadata] ||= {}
+  end
+
+  def self.metadata=(hash)
+    Thread.current[:model_timeline_metadata] = hash
+  end
+
+  def self.with_metadata(hash)
+    previous_metadata = metadata.dup
+    self.metadata = metadata.merge(hash)
+    yield
+  ensure
+    self.metadata = previous_metadata
+  end
+
+  def self.clear_metadata!
+    Thread.current[:model_timeline_metadata] = {}
   end
 end

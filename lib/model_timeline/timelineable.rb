@@ -5,25 +5,28 @@ module ModelTimeline
     extend ActiveSupport::Concern
 
     included do
-      class_attribute :audit_loggers, default: {}
+      class_attribute :loggers, default: {}
     end
 
     class_methods do
       # rubocop:disable Metrics/CyclomaticComplexity
-      def has_timeline(association_name = :timeline_entries, options = {}) # rubocop:disable Naming/PredicateName
+      # rubocop:disable Metrics/PerceivedComplexity
+      # rubocop:disable Naming/PredicateName
+      def has_timeline(association_name = :timeline_entries, options = {})
         klass = (options[:class_name] || 'ModelTimeline::TimelineEntry').constantize
 
         config = {
           on: options[:on] || %i[create update destroy],
           only: options[:only],
           ignore: options[:ignore] || [],
-          klass: klass
+          klass: klass,
+          meta: options[:meta] || {}
         }
 
         config_key = "#{to_s.underscore}-#{klass}"
-        raise ::ModelTimeline::ConfigurationError if audit_loggers[config_key].present?
+        raise ::ModelTimeline::ConfigurationError if loggers[config_key].present?
 
-        audit_loggers[config_key] = config
+        loggers[config_key] = config
 
         after_save -> { log_after_save(config_key) } if config[:on].include?(:create) || config[:on].include?(:update)
 
@@ -32,12 +35,14 @@ module ModelTimeline
         has_many association_name.to_sym, class_name: klass.name, as: :timelineable
       end
       # rubocop:enable Metrics/CyclomaticComplexity
+      # rubocop:enable Metrics/PerceivedComplexity
+      # rubocop:enable Naming/PredicateName
     end
 
     private
 
       def log_after_save(config_key)
-        config = self.class.audit_loggers[config_key]
+        config = self.class.loggers[config_key]
         return unless config
 
         object_changes = filter_attributes(previous_changes, config)
@@ -52,12 +57,13 @@ module ModelTimeline
           action: action,
           object_changes: object_changes,
           ip_address: current_ip_address,
-          **current_user_attributes
+          **current_user_attributes,
+          **collect_metadata(config[:meta], config_key)
         )
       end
 
       def log_audit_deletion(config_key)
-        config = self.class.audit_loggers[config_key]
+        config = self.class.loggers[config_key]
         return unless config
 
         config[:klass].create!(
@@ -66,7 +72,8 @@ module ModelTimeline
           action: 'destroy',
           object_changes: {},
           ip_address: current_ip_address,
-          **current_user_attributes
+          **current_user_attributes,
+          **collect_metadata(config[:meta], config_key)
         )
       end
 
@@ -101,6 +108,31 @@ module ModelTimeline
         result = result.except(*config[:ignore]) if config[:ignore].present?
 
         result
+      end
+
+      def collect_metadata(meta_config, config_key)
+        config = self.class.loggers[config_key]
+        metadata = {}
+
+        # First, add any thread-level metadata
+        metadata.merge!(ModelTimeline.metadata)
+
+        # Then, add any model-specific metadata defined in config
+        meta_config.each do |key, value|
+          resolved_value = case value
+                           when Proc
+                             instance_exec(self, &value)
+                           when Symbol
+                             respond_to?(value) ? send(value) : value
+                           else
+                             value
+                           end
+          metadata[key] = resolved_value
+        end
+
+        # Only include keys that exist as columns in the timeline entry table
+        column_names = config[:klass].column_names.map(&:to_sym)
+        metadata.slice(*column_names)
       end
   end
 end

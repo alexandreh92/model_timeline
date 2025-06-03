@@ -12,6 +12,12 @@ class Post < ActiveRecord::Base
   belongs_to :user
 end
 
+class Comment < ActiveRecord::Base
+  has_timeline
+
+  belongs_to :post
+end
+
 # Create a simple test controller class for controller tests
 module ModelTimeline
   module Test

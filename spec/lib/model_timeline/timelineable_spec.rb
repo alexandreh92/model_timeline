@@ -282,4 +282,52 @@ RSpec.describe ModelTimeline::Timelineable, type: :model do
       expect(post.custom_timeline_entries.count).to eq(1)
     end
   end
+
+  context 'when passing metadata' do
+    let!(:post) { create(:post) }
+    let(:comment) { comment_class.create!(title: 'Initial', content: 'Initial', post: post) }
+
+    let(:custom_timeline_class) do
+      Class.new(ModelTimeline::TimelineEntry) do
+        self.table_name = 'custom_timeline_entries'
+      end
+    end
+
+    before do
+      stub_const('CustomTimelineEntry', custom_timeline_class)
+      stub_const('Comment', comment_class)
+    end
+
+    context 'when meta key is a hash' do
+      let(:comment_class) do
+        Class.new(ActiveRecord::Base) do
+          self.table_name = 'comments'
+
+          has_timeline :custom_timeline_entries, class_name: 'CustomTimelineEntry', meta: { post_id: :post_id }
+
+          belongs_to :post
+        end
+      end
+
+      it 'assigns #post_id method' do
+        expect(comment.custom_timeline_entries.last.post_id).to eq(post.id)
+      end
+    end
+
+    context 'when meta key is a proc' do
+      let(:comment_class) do
+        Class.new(ActiveRecord::Base) do
+          self.table_name = 'comments'
+
+          has_timeline :custom_timeline_entries, class_name: 'CustomTimelineEntry', meta: { post_id: lambda(&:post_id) }
+
+          belongs_to :post
+        end
+      end
+
+      it 'assigns proc result' do
+        expect(comment.custom_timeline_entries.last.post_id).to eq(post.id)
+      end
+    end
+  end
 end

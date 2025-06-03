@@ -42,6 +42,12 @@ ModelTimeline.configure do |config|
 end
 ```
 
+### Install
+
+```bash
+rails generate model_timeline:install --table_name=custom_timeline_entries
+```
+
 Include the Auditable module in your models:
 
 ```ruby

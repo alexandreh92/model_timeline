@@ -1,6 +1,6 @@
 class CreateModelTimelineTables < ActiveRecord::Migration[<%= ActiveRecord::Migration.current_version %>]
   def change
-    create_table :model_timeline_timeline_entries do |t|
+    create_table :<%= @table_name %> do |t|
       t.string :timelineable_type
       t.bigint :timelineable_id
       t.string :action, null: false
@@ -19,9 +19,9 @@ class CreateModelTimelineTables < ActiveRecord::Migration[<%= ActiveRecord::Migr
       t.timestamps
     end
 
-    add_index :model_timeline_timeline_entries, [:timelineable_type, :timelineable_id], name: 'idx_timeline_on_timelineable'
-    add_index :model_timeline_timeline_entries, [:user_type, :user_id], name: 'idx_timeline_on_user'
-    add_index :model_timeline_timeline_entries, :object_changes, using: :gin, name: 'idx_timeline_on_changes'
-    add_index :model_timeline_timeline_entries, :ip_address, name: 'idx_timeline_on_ip'
+    add_index :<%= @table_name %>, [:timelineable_type, :timelineable_id], name: 'idx_timeline_on_timelineable'
+    add_index :<%= @table_name %>, [:user_type, :user_id], name: 'idx_timeline_on_user'
+    add_index :<%= @table_name %>, :object_changes, using: :gin, name: 'idx_timeline_on_changes'
+    add_index :<%= @table_name %>, :ip_address, name: 'idx_timeline_on_ip'
   end
 end
