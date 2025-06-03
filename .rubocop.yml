@@ -5,7 +5,7 @@ AllCops:
   Exclude:
     - "coverage/**/*"
   NewCops: enable
-  TargetRubyVersion: 2.7
+  TargetRubyVersion: 2.6
 
 # Layout
 Layout/LineLength:
