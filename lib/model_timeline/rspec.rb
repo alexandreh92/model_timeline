@@ -20,7 +20,7 @@ module ModelTimeline
   #   describe User, :with_timeline do
   #     it "records timeline entries when updated" do
   #       user.update(name: "New Name")
-  #       expect(user).to have_timelined_change(:name)
+  #       expect(user).to have_timeline_entry_change(:name)
   #     end
   #   end
   module RSpec

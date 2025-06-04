@@ -385,11 +385,6 @@ Configure RSpec to work with ModelTimeline:
 require 'model_timeline/rspec'
 
 RSpec.configure do |config|
-  # This disables ModelTimeline by default in tests for better performance
-  config.before(:suite) do
-    ModelTimeline.disable!
-  end
-
   # Include the RSpec helpers and matchers
   config.include ModelTimeline::RSpec
 end
@@ -440,16 +435,64 @@ expect(user).to have_timeline_entries
 expect(user).to have_timeline_entries(3)
 
 # Check for entries with a specific action
-expect(user).to have_timelined_action(:update)
+expect(user).to have_timeline_entry_action(:update)
 
 # Check if a specific attribute was changed
-expect(user).to have_timelined_change(:email)
+expect(user).to have_timeline_entry_change(:email)
 
 # Check if an attribute was changed to a specific value
-expect(user).to have_timelined_entry(:status, 'active')
+expect(user).to have_timeline_entry(:status, 'active')
+
+# Check if an entry was created with expected metadata
+expect(user).to have_timeline_entry_metadata(foo: 'bar', baz: 'biz')
 ```
 
 These matchers make it easy to test that your application is correctly tracking model changes.
+
+##### Matchers for custom models/tables
+
+You can add a configuration in your support file to create matchers for your association.
+Given a model like this:
+
+```ruby
+class User < ApplicationRecord
+  has_timeline :security_events, class_name: 'SecurityTimelineEntry'
+end
+```
+
+You should set a configuration in your RSpec support file with:
+```ruby
+# spec/support/model_timeline.rb
+require 'model_timeline/rspec'
+
+RSpec.configure do |config|
+  # Include the RSpec helpers and matchers
+  config.include ModelTimeline::RSpec
+  config.include ModelTimeline::RSpec::Matchers.define_timeline_matchers_for(:security_events)
+end
+```
+
+Then you have those new matchers:
+
+```ruby
+# Check for any timeline entries
+expect(user).to have_security_events
+
+# Check for a specific number of entries
+expect(user).to have_security_events(3)
+
+# Check for entries with a specific action
+expect(user).to have_security_event_action(:update)
+
+# Check if a specific attribute was changed
+expect(user).to have_security_event_change(:email)
+
+# Check if an attribute was changed to a specific value
+expect(user).to have_security_event(:status, 'active')
+
+# Check if an entry was created with expected metadata
+expect(user).to have_security_event_metadata(foo: 'bar', baz: 'biz')
+```
 
 
 ## License

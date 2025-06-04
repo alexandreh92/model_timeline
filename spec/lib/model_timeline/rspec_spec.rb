@@ -10,7 +10,7 @@ RSpec.describe ModelTimeline::RSpec do
 
     user.update(username: 'updated')
 
-    expect(user).not_to have_timelined_change(:username)
+    expect(user).not_to have_timeline_entry_change(:username)
   end
 
   context 'with :with_timeline metadata', :with_timeline do
@@ -19,7 +19,7 @@ RSpec.describe ModelTimeline::RSpec do
 
       user.update(username: 'updated')
 
-      expect(user).to have_timelined_change(:username)
+      expect(user).to have_timeline_entry_change(:username)
     end
   end
 

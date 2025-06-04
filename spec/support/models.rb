@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class User < ActiveRecord::Base
-  has_timeline
+  has_timeline meta: { something: 'cool' }
 
   has_many :posts, dependent: :destroy
 end
