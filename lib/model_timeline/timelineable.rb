@@ -185,8 +185,7 @@ module ModelTimeline
 
       # Collects metadata for the timeline entry
       #
-      # @param meta_config [Hash] The metadata configuration
-      # @param config_key [String] The configuration key for this model
+      # @param meta_config [Hash, Proc] The metadata configuration
       # @return [Hash] Collected metadata
       def collect_metadata(meta_config)
         metadata = {}
@@ -194,20 +193,44 @@ module ModelTimeline
         # First, add any thread-level metadata
         metadata.merge!(ModelTimeline.metadata)
 
-        # Then, add any model-specific metadata defined in config
-        meta_config.each do |key, value|
-          resolved_value = case value
-                           when Proc
-                             instance_exec(self, &value)
-                           when Symbol
-                             respond_to?(value) ? send(value) : value
-                           else
-                             value
-                           end
-          metadata[key] = resolved_value
-        end
+        # Then, add any model-specific metadata from config
+        metadata.merge!(resolve_metadata_value(meta_config))
 
         metadata
+      end
+
+      # Recursively resolves metadata values
+      #
+      # @param value [Hash, Proc, Symbol, Object] The value to resolve
+      # @return [Hash, Object] The resolved value
+      def resolve_metadata_value(value)
+        case value
+        when Proc
+          # If it's a Proc, execute it and process the result recursively
+          proc_result = instance_exec(self, &value)
+          proc_result.is_a?(Hash) ? process_metadata_hash(proc_result) : proc_result
+        when Hash
+          # If it's a Hash, process each key-value pair
+          process_metadata_hash(value)
+        when Symbol
+          # If it's a Symbol, try to call the method
+          respond_to?(value) ? send(value) : value
+        else
+          # Any other value, return as-is
+          value
+        end
+      end
+
+      # Processes a metadata hash by resolving each value
+      #
+      # @param hash [Hash] The hash to process
+      # @return [Hash] The processed hash
+      def process_metadata_hash(hash)
+        result = {}
+        hash.each do |key, val|
+          result[key] = resolve_metadata_value(val)
+        end
+        result
       end
 
       def column_metadata(config)
