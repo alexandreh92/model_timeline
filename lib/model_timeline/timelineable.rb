@@ -56,6 +56,10 @@ module ModelTimeline
       # rubocop:disable Metrics/PerceivedComplexity
       # rubocop:disable Naming/PredicateName
       def has_timeline(*args, **kwargs)
+        if defined?(Rails.env) && Rails.env.development? && caller.any? { |line| line.include?('reload!') }
+          loggers.clear # Reset loggers during reload! in console
+        end
+
         association_name = args.first.is_a?(Symbol) ? args.shift : :timeline_entries
 
         klass = (kwargs[:class_name] || 'ModelTimeline::TimelineEntry').constantize
