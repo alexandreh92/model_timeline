@@ -20,8 +20,12 @@ module ModelTimeline
   module Timelineable
     extend ActiveSupport::Concern
 
-    included do
-      class_attribute :loggers, default: {}
+    def self.logger_store
+      @logger_store ||= {}
+    end
+
+    def self.clear_loggers!
+      logger_store.clear
     end
 
     # Methods that will be added as class methods to the including class
@@ -56,10 +60,6 @@ module ModelTimeline
       # rubocop:disable Metrics/PerceivedComplexity
       # rubocop:disable Naming/PredicateName
       def has_timeline(*args, **kwargs)
-        if defined?(Rails.env) && Rails.env.development? && caller.any? { |line| line.include?('reload!') }
-          loggers.clear # Reset loggers during reload! in console
-        end
-
         association_name = args.first.is_a?(Symbol) ? args.shift : :timeline_entries
 
         klass = (kwargs[:class_name] || 'ModelTimeline::TimelineEntry').constantize
@@ -73,9 +73,9 @@ module ModelTimeline
         }
 
         config_key = "#{to_s.underscore}-#{klass}"
-        raise ::ModelTimeline::ConfigurationError if loggers[config_key].present?
+        raise ::ModelTimeline::ConfigurationError if ModelTimeline::Timelineable.logger_store[config_key].present?
 
-        loggers[config_key] = config
+        ModelTimeline::Timelineable.logger_store[config_key] = config
 
         after_save -> { log_after_save(config_key) } if config[:on].include?(:create) || config[:on].include?(:update)
 
@@ -97,7 +97,7 @@ module ModelTimeline
       def log_after_save(config_key)
         return unless ModelTimeline.enabled?
 
-        config = self.class.loggers[config_key]
+        config = ModelTimeline::Timelineable.logger_store[config_key]
         return unless config
 
         object_changes = filter_attributes(previous_changes, config)
@@ -125,7 +125,7 @@ module ModelTimeline
       def log_audit_deletion(config_key)
         return unless ModelTimeline.enabled?
 
-        config = self.class.loggers[config_key]
+        config = ModelTimeline::Timelineable.logger_store[config_key]
         return unless config
 
         config[:klass].create!(

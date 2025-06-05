@@ -26,6 +26,10 @@ module ModelTimeline
       ActiveSupport.on_load(:action_controller) do
         include ControllerAdditions::ClassMethods
       end
+
+      config.to_prepare do
+        ModelTimeline::Timelineable.clear_loggers!
+      end
     end
   end
 end
