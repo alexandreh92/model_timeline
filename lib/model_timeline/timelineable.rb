@@ -132,7 +132,7 @@ module ModelTimeline
           timelineable_type: self.class.name,
           timelineable_id: id,
           action: 'destroy',
-          object_changes: {},
+          object_changes: attributes.transform_values { |v| [v, nil] },
           metadata: object_metadata(config),
           ip_address: current_ip_address,
           **current_user_attributes,

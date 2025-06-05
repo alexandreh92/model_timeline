@@ -47,6 +47,10 @@ RSpec.describe ModelTimeline::Timelineable, :with_timeline, type: :model do
 
         entry = ModelTimeline::TimelineEntry.last
         expect(entry.action).to eq('destroy')
+        expect(entry.object_changes).to a_hash_including(
+          'title' => [post.title, nil],
+          'content' => [post.content, nil]
+        )
       end
     end
   end
