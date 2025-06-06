@@ -20,6 +20,7 @@ RSpec.describe ModelTimeline::Timelineable, :with_timeline, type: :model do
         entry = post.timeline_entries.last
         expect(entry.action).to eq('create')
         expect(entry.object_changes).to include('title')
+        expect(entry.object_changes).to include({ 'title' => [nil, post.title] })
       end
     end
 

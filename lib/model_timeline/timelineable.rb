@@ -100,11 +100,12 @@ module ModelTimeline
         config = ModelTimeline::Timelineable.logger_store[config_key]
         return unless config
 
-        object_changes = filter_attributes(previous_changes, config)
-        return if object_changes.empty?
-
         action = previously_new_record? ? :create : :update
         return unless config[:on].include?(action)
+
+        current_changes = action == :create ? attributes.transform_values { |v| [nil, v] } : previous_changes
+        object_changes = filter_attributes(current_changes, config)
+        return if object_changes.empty?
 
         config[:klass].create!(
           timelineable_type: self.class.name,
@@ -132,7 +133,7 @@ module ModelTimeline
           timelineable_type: self.class.name,
           timelineable_id: id,
           action: 'destroy',
-          object_changes: attributes.transform_values { |v| [v, nil] },
+          object_changes: filter_attributes(attributes.transform_values { |v| [v, nil] }, config),
           metadata: object_metadata(config),
           ip_address: current_ip_address,
           **current_user_attributes,
